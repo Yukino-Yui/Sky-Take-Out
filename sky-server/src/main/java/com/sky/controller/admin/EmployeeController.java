@@ -116,6 +116,12 @@ public class EmployeeController {
         return Result.success(pageresult);
     }
 
+    /**
+     * 启用禁用员工账号
+     * @param status
+     * @param id
+     * @return
+     */
     @PostMapping("/status/{status}")
     @ApiOperation("启用禁用员工账号")
     public Result startOrStop(@PathVariable Integer status,Long id){
@@ -123,5 +129,33 @@ public class EmployeeController {
         employeeService.startOrStop(status,id);
         return  Result.success();
     }
+
+    /**
+     * 根据id查询员工信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询员工信息")
+    public Result<Employee> getById(@PathVariable Long id){
+        log.info("员工id：{}",id);
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    /**
+     * 修改员工信息
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("编辑员工信息")
+    //第一遍我在这里传过来的一直是null，是因为忘记加@RequestBody了，传过来的是json数据格式，一定不要忘
+    public Result updateInfo(@RequestBody EmployeeDTO employeeDTO){
+        log.info("修改员工：{}", employeeDTO);
+        employeeService.updateInfo(employeeDTO);
+        return Result.success();
+    }
+
 
 }
