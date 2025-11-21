@@ -15,8 +15,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
+//LocalDateTime/LocalDate 是 Java 8 新的时间类型。Spring Boot 默认不能格式化它们，
+//所以需要写你看到的 JacksonObjectMapper。旧的 java.util.Date 已经过时，虽然 Spring 能处理，但不推荐再用了。
 /**
  * 对象映射器:基于jackson将Java对象转为json，或者将json转为Java对象
  * 将JSON解析为Java对象的过程称为 [从JSON反序列化Java对象]

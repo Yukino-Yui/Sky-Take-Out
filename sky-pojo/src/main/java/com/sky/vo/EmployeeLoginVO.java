@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Data
+@Data  // Lombok：自动生成 getter/setter/toString/equals/hashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
