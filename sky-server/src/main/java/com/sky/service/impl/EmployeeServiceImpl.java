@@ -102,6 +102,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    /**
+     * 分页查询员工
+     * @param employeePageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         //select * from employee limit 0,10
@@ -113,4 +118,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> records = page.getResult();
         return new PageResult(total,records);
     }
+
+    public void startOrStop(Integer status,Long id){
+        //update employee set status = ? where id =?
+        //这里要动态更新 ，所以传这两个参数到mapper里面的方法并不合适，比如还得修改时间等
+        //所以要用动态更新的方法，用Employee实体类来封装
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+        employeeMapper.update(employee);
+    }
+
 }
