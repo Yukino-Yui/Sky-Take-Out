@@ -32,7 +32,8 @@ public class Employee implements Serializable {
 
     private Integer status;
 
-    //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    //注解，作用是对日期进行格式化，最后前端页面看到的就是"yyyy-MM-dd HH:mm:ss"这种格式的字符串了
+    // @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
     //@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
