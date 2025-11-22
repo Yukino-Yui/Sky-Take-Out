@@ -27,8 +27,8 @@ import java.util.Map;
  * 员工管理
  */
 @RestController
-@RequestMapping("/admin/employee")//管理端发出的请求，统一使用/admin作为前缀，用户端则用/user
-@Slf4j
+@RequestMapping("/admin/employee")//整个类的所有请求方法加一个共同的路径前缀，管理端发出的请求，统一使用/admin作为前缀，用户端则用/user
+@Slf4j //日志注解
 public class EmployeeController {
 
     //Autowired 的作用是：
