@@ -12,8 +12,15 @@ import java.io.ByteArrayInputStream;
 @Data
 @AllArgsConstructor
 @Slf4j
+
+/**
+ * 阿里云文件上传工具类
+ */
 public class AliOssUtil {
 
+    /**
+     * 4个属性恰好对应.yml文件里面的配置项
+     */
     private String endpoint;
     private String accessKeyId;
     private String accessKeySecret;
@@ -52,7 +59,7 @@ public class AliOssUtil {
             }
         }
 
-        //文件访问路径规则 https://BucketName.Endpoint/ObjectName
+        //文件访问路径规则 https://BucketName.Endpoint/ObjectName（ObjectName就是传进来的参数）
         StringBuilder stringBuilder = new StringBuilder("https://");
         stringBuilder
                 .append(bucketName)
@@ -61,7 +68,7 @@ public class AliOssUtil {
                 .append("/")
                 .append(objectName);
 
-        log.info("文件上传到:{}", stringBuilder.toString());
+        log.info("文件上传到:{}", stringBuilder.toString()); //toString转换成String类型
 
         return stringBuilder.toString();
     }

@@ -37,3 +37,11 @@ sky:
     admin-ttl: 720000000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+
+    #springboot框架可以实现自动转换,AliOssProperties配置属性类里面用的是驼峰命名
+    #这些类似的配置项可以通过封装为配置属性类来加载
+  alioss:
+    endpoint: ${sky.alioss.endpoint}
+    access-key-id: ${sky.alioss.access-key-id}
+    access-key-secret: ${sky.alioss.access-key-secret}
+    bucket-name: ${sky.alioss.bucket-name}

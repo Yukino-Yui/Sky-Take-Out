@@ -23,34 +23,34 @@ public class JwtUtil {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
         // 生成JWT的时间
-        long expMillis = System.currentTimeMillis() + ttlMillis;
+        long expMillis = System.currentTimeMillis() + ttlMillis;//ttlmills就是jwt的存活时间，在yml文件中已配置好
         Date exp = new Date(expMillis);
 
-        // 设置jwt的body
+        // 设置jwt
         JwtBuilder builder = Jwts.builder()
-                // 设置签名使用的签名算法和签名使用的秘钥
-                .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8))
-                // 如果有私有声明，一定要先设置这个自己创建的私有的声明，这个是给builder的claim赋值，一旦写在标准的声明赋值之后，就是覆盖了那些标准的声明的
+                //  设置Payload，（设置加密信息，设置过期时长）
                 .setClaims(claims)
-                // 设置过期时间
-                .setExpiration(exp);
+                .setExpiration(exp)
 
-        return builder.compact();
+                // 设置签名使用的签名算法和签名使用的秘钥（身份认证，防篡改）
+                .signWith(signatureAlgorithm, secretKey.getBytes(StandardCharsets.UTF_8));
+
+        return builder.compact(); //最后将打包的jwt字符串返回并传给token
     }
 
     /**
      * Token解密
      *
-     * @param secretKey jwt秘钥 此秘钥一定要保留好在服务端, 不能暴露出去, 否则sign就可以被伪造, 如果对接多个客户端建议改造成多个
+     * @param secretKey 密钥
      * @param token     加密后的token
      * @return
      */
     public static Claims parseJWT(String secretKey, String token) {
-        // 得到DefaultJwtParser
+        //先验签名、再检过期，全部通过才会返回 Jws<Claims> 对象
         Claims claims = Jwts.parser()
-                // 设置签名的秘钥
+                // 把密钥转成字节数组，告诉解析器“正确签名长这样”
                 .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-                // 设置需要解析的jwt，JWT 的 payload 在解析后变成一个 Claims 对象
+                // 把整串JWT拆成头.载荷.签名三段，并验签 + 过期时间等标准校验，通过就得到一个 Jws<Claims>
                 .parseClaimsJws(token).getBody();
         return claims;
     }

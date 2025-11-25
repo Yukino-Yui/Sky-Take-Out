@@ -27,16 +27,16 @@ import java.util.Map;
  * 员工管理
  */
 @RestController
-@RequestMapping("/admin/employee")//整个类的所有请求方法加一个共同的路径前缀，管理端发出的请求，统一使用/admin作为前缀，用户端则用/user
+@RequestMapping("/admin/employee")//请求路径，整个类的所有请求方法加一个共同的路径前缀
 @Slf4j //日志注解
 public class EmployeeController {
 
     //Autowired 的作用是：
     //告诉 Spring：“请帮我把这个 Bean 注入进来，我不想自己 new
-    //Spring 会扫描容器，找到实现 EmployeeService 的 Bean
-    //自动赋值给 employeeService
+    //Spring 会扫描容器，找到实现 EmployeeService接口 的 Bean类自动赋值给 employeeService
     //你在 Controller 里就可以直接用 employeeService.login(...)
     //如果没有 @Autowired：你只是定义了一个成员变量：
+
     @Autowired
     private EmployeeService employeeService;
     @Autowired
@@ -56,15 +56,16 @@ public class EmployeeController {
 
         Employee employee = employeeService.login(employeeLoginDTO);
 
-        //登录成功后，生成jwt令牌
-        //key 是String类型，value是Object也就是可以是任何类型
+        // 登录成功后，生成jwt令牌
+        // JWT声明，都用map存储
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
+        claims.put(JwtClaimsConstant.EMP_ID, employee.getId()); //id
+
         //createJWT是正式生成令牌，工具类都是静态方法，所以通过JwtUtil调用createJWT
         String token = JwtUtil.createJWT(
-                jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
-                claims);
+                jwtProperties.getAdminSecretKey(), //密钥“itcast”
+                jwtProperties.getAdminTtl(), //"存活时间72000000毫秒"
+                claims); //自定义声明信息
         //Builder是一种设计模式，这里用来创建一个封装前端需要的EmployeeLoginVO对象
         //作用：链式调用，代码清晰，不用写一大堆 set 方法
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()

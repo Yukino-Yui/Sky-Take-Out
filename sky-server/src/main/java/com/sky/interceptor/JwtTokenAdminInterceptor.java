@@ -46,9 +46,11 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
         //2、校验令牌
         try {
-            log.info("jwt校验:{}", token);
+            log.info("jwt校验:{}", token);//JwtUtil.parseJWT方法已经完成了校验，校验通过就会返回JWS<Claims>
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
+            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());//取出empId并转换类型，转成Long
+
+            //把empId放进 ThreadLocal，以后任何操作通过BaseContext.getCurrentId()就知道是谁在发起请求
             BaseContext.setCurrentId(empId);
 
             log.info("当前员工id：{}", empId);

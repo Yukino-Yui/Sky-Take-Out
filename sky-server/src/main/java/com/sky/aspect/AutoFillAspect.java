@@ -50,7 +50,7 @@ public class AutoFillAspect {
         OperationType operationType = autoFill.value();//获得数据库操作类型
 
         //获取到当前被拦截的方法（update，insert）的参数--实体对象
-        Object[] args = joinPoint.getArgs();
+        Object[] args = joinPoint.getArgs(); //一个道理不知道参数是什么类型，所以用Object类型的数组封装
         if(args == null || args.length == 0){
             return;
         }
