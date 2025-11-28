@@ -8,10 +8,29 @@ spring:
     allow-circular-references: true
   datasource:
     druid:
+      keep-alive: true
       driver-class-name: ${sky.datasource.driver-class-name}
       url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
+
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+
+      time-between-eviction-runs-millis: 30000
+      min-evictable-idle-time-millis: 600000
+
+
+      max-wait: 60000
+
+      phy-max-use-count: 500
+
 
 mybatis:
   #mapper配置文件

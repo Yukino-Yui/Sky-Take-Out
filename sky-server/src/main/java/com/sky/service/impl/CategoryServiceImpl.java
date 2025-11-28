@@ -43,14 +43,6 @@ public class CategoryServiceImpl implements CategoryService {
         //设置状态 0：禁用 1：启用
         category.setStatus(StatusConstant.ENABLE);
 
-//        //设置创建时间和最后修改时间
-//        category.setCreateTime(LocalDateTime.now());
-//        category.setUpdateTime(LocalDateTime.now());
-//
-//        //创建人id和最后修改人id
-//        category.setCreateUser(BaseContext.getCurrentId());
-//        category.setUpdateUser(BaseContext.getCurrentId());
-
         categoryMapper.addCategory(category);
     }
 
@@ -61,10 +53,6 @@ public class CategoryServiceImpl implements CategoryService {
     public void updateCategory(CategoryDTO categoryDTO){
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO,category);
-
-//        //创建一个category对象来接收categoryDTO，因为还要更改更新时间和当前执行更新操作的用户
-//        category.setUpdateTime(LocalDateTime.now());
-//        category.setUpdateUser(BaseContext.getCurrentId());
 
         categoryMapper.updateCategory(category);
 
@@ -91,6 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         return new PageResult(total,records);
     }
 
+
     /**
      * 启用或禁用分类
      * @param status
@@ -105,10 +94,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .id(id)
                 .build();
         //调用update，即降低了耦合，又能满足更新时间和updateUser，同时不用再写一遍update的sql语句
-
-//        //不要忘了更新updateTime和updateUser
-//        category.setUpdateTime(LocalDateTime.now());
-//        category.setUpdateUser(BaseContext.getCurrentId());
 
         categoryMapper.updateCategory(category);
     }

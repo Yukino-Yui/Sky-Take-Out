@@ -3,12 +3,60 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.DishMapper">
 
-    <!--插入口味会使用到主键id，要返回id-->
+    <!--新增口味会使用到主键id，要返回id，useGeneratedKeys 的用途：获取数据库生成的主键并回填到对象中-->
+    <!--为什么下面不用再像这样返回id了，因为id是自增的 新增的时候前端数据不会带有id，
+    所以需要返回一个dish_id，来新增新增菜品关联的口味(只有在执行 INSERT 且数据库自动生成主键的时候才需要)-->
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         insert into dish (name, category_id, price, image, description, create_time, update_time, create_user,
                             update_user, status)
         values (#{name}, #{categoryId}, #{price}, #{image}, #{description}, #{createTime}, #{updateTime}, #{createUser},
                 #{updateUser}, #{status})
     </insert>
+
+    <!--resultType返回类型，parameterType是参数类型--> <!--多表查询sql-->
+    <select id="pageQueryDish" resultType="com.sky.vo.DishVO">
+        select d.*, c.name AS category_name from dish d left outer join category c on d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                <!--模糊搜索-->
+                and d.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <!--根据id集合批量删除菜品-->
+    <delete id="deleteBatch">
+        delete from dish where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--根据id修改菜品-->
+    <update id="updateDish" parameterType="com.sky.entity.Dish">
+        update dish
+        <set>
+            <!--test ="",""里面的是java对象属性，#{}里面的也是java对象属性-->
+            <if test="name != null"> name = #{name},</if>
+            <if test="price != null"> price = #{price},</if>
+            <if test="image != null"> image = #{image},</if>
+            <if test="categoryId != null"> category_id = #{categoryId},</if>
+            <if test="description != null"> description = #{description},</if>
+            <if test="createUser != null"> create_user = #{createUser},</if>
+            <if test="createTime != null"> create_time = #{createTime},</if>
+            <if test="updateTime != null"> update_time = #{updateTime},</if>
+            <if test="updateUser != null"> update_user = #{updateUser},</if>
+            <if test="status != null"> status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
 
 </mapper>
