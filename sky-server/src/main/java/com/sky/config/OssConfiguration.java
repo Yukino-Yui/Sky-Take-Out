@@ -9,12 +9,18 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 配置类，方法用来创建AliOssUtil对象
+ * 只负责对象创建
  */
 
-@Configuration
+@Configuration //--标记为配置类，Spring 会扫描其中的 @Bean 方法。
 @Slf4j
 public class OssConfiguration {
-    //参数是把AliossProperties的对象注入过来
+    /**
+     * //@Bean--作用：将方法返回的对象注册为 Bean，放入容器。
+     * 关键点：方法参数 AliOssProperties aliOssProperties 会被 Spring 自动注入（容器中已有该 Bean）
+     * @param aliOssProperties
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean //表示保证整个spring容器里面只有一个util对象（对于工具类对象一般只要创建一个1个）
     public AliOssUtil aliOssUtil(AliOssProperties aliOssProperties) {

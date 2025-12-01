@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Data
 public class UserLoginDTO implements Serializable {
 
+    //对应用户的openid
     private String code;
 
 }

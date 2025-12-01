@@ -13,6 +13,7 @@ import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,8 +37,10 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+
     @Autowired
-    private DishService dishService;
+    private SetmealMapper setmealMapper;
+
 
     /**
      * 新增菜品和对应的口味
@@ -80,16 +84,16 @@ public class DishServiceImpl implements DishService {
      */
     //分页查询菜品，前端请求封装为DTO，接受最后返回PageResult类型
     public PageResult pageQueryDish(DishPageQueryDTO dishPageQueryDTO) {
-        //开始分页，会把limit动态插入select sql语句当中 页码，每页记录数
+        // 1. 开启分页（告诉 MyBatis：下一条 select 是分页查询）
         PageHelper.startPage(dishPageQueryDTO.getPage(),dishPageQueryDTO.getPageSize());
 
         //为什么要用DishVO，因为返回给前端的是Result.success(PageResult)，对象类型是PageResult
         //里面的records是一个列表，把列表里前端需要的每一项数据封装为一个DishVO对象，最后赋给List<DishVO>records
-        Page<DishVO> page = dishMapper.pageQueryDish(dishPageQueryDTO);
+        Page<DishVO> page = dishMapper.pageQueryDish(dishPageQueryDTO);//// 2. 执行 mapper 的 select
 
         Long total = page.getTotal();
 
-        List<DishVO> records = page.getResult();
+        List<DishVO> records = page.getResult();//getResult()得到一组DishVO对象，封装为一个列表
 
         //由total，records new一个PageResult对象，并返回
         return new PageResult(total,records);
@@ -197,5 +201,77 @@ public class DishServiceImpl implements DishService {
             //批量插入n条记录到dish_flavor表（可能有多个口味，可能也没有口味）
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
+
+    /**
+     * 菜品起售停售
+     * @param status
+     * @param id
+     */
+    @Transactional
+    public void startOrStop(Integer status, Long id) {
+        Dish dish  = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+
+        dishMapper.updateDish(dish);
+
+        if(status == StatusConstant.DISABLE){
+            //如果是停售操作，还需要将包含当前菜品的套餐也停售
+            List<Long> dishIds = new ArrayList<>();
+            dishIds.add(id);
+
+            //select setmeal_id from setmeal_dish where dish_id in (?,?,?)
+            List<Long> setmealIds = setmealDishMapper.getSetmealByDishId(dishIds);
+
+            if (setmealIds != null && setmealIds.isEmpty()){
+                for (Long setmealId : setmealIds) {
+                Setmeal setmeal = Setmeal.builder()
+                        .id(setmealId)
+                        .status(StatusConstant.DISABLE)
+                        .build();
+                setmealMapper.updateSetmeal(setmeal);
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据分类id查询菜品
+     * @param categoryId
+     * @return
+     */
+    public List<Dish> list(Long categoryId) {
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)
+                .status(StatusConstant.ENABLE)
+                .build();
+        return dishMapper.list(dish);
+    }
+
+    /**
+     * 条件查询菜品和口味
+     * @param dish
+     * @return
+     */
+    public List<DishVO> listWithFlavor(Dish dish) {
+        //调用list动态查询菜品
+        List<Dish> dishList = dishMapper.list(dish);
+
+        List<DishVO> dishVOList = new ArrayList<>();
+
+        for (Dish d : dishList) {
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(d,dishVO);
+
+            //根据菜品id查询对应的口味
+            List<DishFlavor> flavors = dishFlavorMapper.getByDishId(d.getId());
+
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+
+        return dishVOList;
     }
 }

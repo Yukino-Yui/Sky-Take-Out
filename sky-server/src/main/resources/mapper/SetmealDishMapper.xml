@@ -3,6 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.sky.mapper.SetmealDishMapper">
 
+    <!--菜品批量删除时查询是否绑定了套餐-->
     <select id="getSetmealByDishId" resultType="java.lang.Long">
         select setmeal_id from setmeal_dish where dish_id in
         <foreach collection="dishIds" item="dishId" separator="," open="(" close=")">
@@ -11,5 +12,15 @@
 
     </select>
 
+    <!--保存套餐和菜品的关联关系-->
+    <insert id="insertBatch">
+        insert into setmeal_dish
+        (setmeal_id,dish_id,name,price,copies)
+        values
+            <!--open = '(',close = ')'会自动帮你生成(),这里没写，所以要加括号-->
+        <foreach collection="setmealDishes" item="df" separator=",">
+            (#{df.setmealId},#{df.dishId},#{df.name},#{df.price},#{df.copies})
+        </foreach>
+    </insert>
 
 </mapper>

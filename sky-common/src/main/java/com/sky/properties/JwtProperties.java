@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class JwtProperties {
 
     /**
-     * 注意驼峰会自动对应（由框架实现了自动转换）这种形式 kebab-case: big-title
+     *
      * 管理端员工生成jwt令牌相关配置
      */
     private String adminSecretKey;

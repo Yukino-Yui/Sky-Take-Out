@@ -13,24 +13,11 @@ spring:
       url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
-
-      initial-size: 5
-      min-idle: 5
-      max-active: 20
-
-      validation-query: SELECT 1
-      test-while-idle: true
-      test-on-borrow: false
-      test-on-return: false
-
-      time-between-eviction-runs-millis: 30000
-      min-evictable-idle-time-millis: 600000
-
-
-      max-wait: 60000
-
-      phy-max-use-count: 500
-
+  redis:
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
+    password: ${sky.redis.password}
+    database: ${sky.redis.database}
 
 mybatis:
   #mapper配置文件
@@ -53,14 +40,32 @@ sky:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: itcast
     # 设置jwt过期时间
-    admin-ttl: 720000000
+    admin-ttl: 7200000000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
 
-    #springboot框架可以实现自动转换,AliOssProperties配置属性类里面用的是驼峰命名
-    #这些类似的配置项可以通过封装为配置属性类来加载
+    #<小程序端用户jwt配置>
+
+    # 设置jwt签名加密时使用的密钥
+    user-secret-key: itheima
+    # 设置jwt过期时间
+    user-ttl: 7200000000
+    # 设置前端传递过来的令牌名称
+    user-token-name: authentication
+
   alioss:
     endpoint: ${sky.alioss.endpoint}
     access-key-id: ${sky.alioss.access-key-id}
     access-key-secret: ${sky.alioss.access-key-secret}
     bucket-name: ${sky.alioss.bucket-name}
+
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
+
+
+    #springboot框架可以实现自动转换,AliOssProperties配置属性类里面用的是驼峰命名
+    #这些类似的配置项可以通过封装为配置属性类来加载
+    #定义配置结构，使用占位符 ${...},不写死具体值，便于多环境切换
+    #为什么这样写：占位符会被 application-dev.yml 中的实际值替换
+    #不同环境（dev/test/prod）可用不同的配置文件，主配置结构不变

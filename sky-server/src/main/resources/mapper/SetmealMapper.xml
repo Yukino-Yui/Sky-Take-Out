@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealMapper">
+
+    <!--只要修改setmeal表里面相关字段的值，就是更新操作-->
+    <update id="updateSetmeal" parameterType="Setmeal">
+        update setmeal
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--新增套餐，需要用到套餐自增的id，mybatis自动把自增的id赋给生成的setmeal对象，供setmeal_dish保存套餐和菜品的关联关系时使用-->
+    <insert id="insert" parameterType="Setmeal" useGeneratedKeys="true" keyProperty="id">
+        insert into setmeal
+        (category_id, name, price, status, description, image, create_time, update_time, create_user, update_user)
+        values (#{categoryId}, #{name}, #{price}, #{status}, #{description}, #{image}, #{createTime}, #{updateTime},
+                #{createUser}, #{updateUser})
+    </insert>
+
+    <!--分页查询,多表查询，因为categoryName只在category表里面，setmeal表里面没有这个字段-->
+    <select id="pageQuerySetmeal" resultType="com.sky.vo.SetmealVO">
+        select s.*,c.name AS category_name from setmeal s left join category c on s.category_id = c.id
+            <where>
+                <if test="name != null">
+                    and s.name like concat('%',#{name},'%')
+                </if>
+                <if test="status != null">
+                    and s.status = #{status}
+                </if>
+                <if test="categoryId != null">
+                    and s.category_id = #{categoryId}
+                </if>
+            </where>
+            order by s.update_time desc
+    </select>
+
+    <!--动态条件查询，可以根据套餐name，分类id，套餐状态（起售停售）查询套餐-->
+    <select id="list" parameterType="Setmeal" resultType="Setmeal">
+        select * from setmeal
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+</mapper>

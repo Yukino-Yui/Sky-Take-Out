@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 
 /**
  * 阿里云文件上传工具类
+ * 只负责业务逻辑
  */
 public class AliOssUtil {
 
