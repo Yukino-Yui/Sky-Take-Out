@@ -50,7 +50,7 @@ public class JwtUtil {
         Claims claims = Jwts.parser()
                 // 把密钥转成字节数组，告诉解析器“正确签名长这样”
                 .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8))
-                // 把整串JWT拆成头.载荷.签名三段，并验签 + 过期时间等标准校验，通过就得到一个 Jws<Claims>
+                // 把整串JWT拆成头.载荷.签名三段，并验签 + 过期时间等标准校验，通过就得到一个 Jwt<Claims>
                 .parseClaimsJws(token).getBody();
         return claims;
     }
