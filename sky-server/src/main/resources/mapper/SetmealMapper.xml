@@ -4,7 +4,7 @@
 <mapper namespace="com.sky.mapper.SetmealMapper">
 
     <!--只要修改setmeal表里面相关字段的值，就是更新操作-->
-    <update id="updateSetmeal" parameterType="Setmeal">
+    <update id="update" parameterType="Setmeal">
         update setmeal
         <set>
             <if test="name != null and name != ''">
@@ -72,6 +72,18 @@
             </if>
             <if test="status != null">
                 and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from setmeal
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
             </if>
         </where>
     </select>

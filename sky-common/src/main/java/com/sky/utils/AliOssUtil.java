@@ -12,7 +12,6 @@ import java.io.ByteArrayInputStream;
 @Data
 @AllArgsConstructor
 @Slf4j
-
 /**
  * 阿里云文件上传工具类
  * 只负责业务逻辑

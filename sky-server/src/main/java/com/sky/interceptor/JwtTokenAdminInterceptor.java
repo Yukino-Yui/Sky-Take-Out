@@ -25,6 +25,8 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
 
     /**
      * 校验jwt
+     * 定义拦截器拦截后要做什么逻辑，比如校验 token
+     * 拦截器是 SpringMVC 规定的接口，这个代码是实现管理端拦截器的逻辑
      *
      * @param request
      * @param response
@@ -32,7 +34,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
      * @return
      * @throws Exception
      */
-    //拦截器是 Spring MVC 规定的接口，要实现的就是这个规定的接口的逻辑，所以不用管方法里面的参数
+
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
@@ -41,7 +43,7 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        //1、从请求头中获取令牌
+        //1、从请求头中获取token
         String token = request.getHeader(jwtProperties.getAdminTokenName());
 
         //2、校验令牌
@@ -49,7 +51,8 @@ public class JwtTokenAdminInterceptor implements HandlerInterceptor {
             log.info("jwt校验:{}", token);
             //JwtUtil.parseJWT方法已经完成了校验，校验通过就会返回JWT<Claims>
             Claims claims = JwtUtil.parseJWT(jwtProperties.getAdminSecretKey(), token);
-            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());//取出empId并转换类型，转成Long
+            //取出empId并转换类型，转成Long
+            Long empId = Long.valueOf(claims.get(JwtClaimsConstant.EMP_ID).toString());
 
             //把empId放进 ThreadLocal，以后任何操作通过BaseContext.getCurrentId()就知道是谁在发起请求
             BaseContext.setCurrentId(empId);

@@ -14,16 +14,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
-
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
-//LocalDateTime/LocalDate 是 Java 8 新的时间类型。Spring Boot 默认不能格式化它们，
-//所以需要写你看到的 JacksonObjectMapper。旧的 java.util.Date 已经过时，虽然 Spring 能处理，但不推荐再用了。
 /**
- * 对象映射器:基于jackson将Java对象转为json，或者将json转为Java对象
- * 将JSON解析为Java对象的过程称为 [从JSON反序列化Java对象]
- * 从Java对象生成JSON的过程称为 [序列化Java对象到JSON]
+ * 对象映射器:基于jackson将Java对象转为json，或者反过来将json数据转为Java对象
+ * Java对象->json,序列化
+ * json->Java对象,反序列化
  */
 public class JacksonObjectMapper extends ObjectMapper {
 
@@ -40,15 +36,19 @@ public class JacksonObjectMapper extends ObjectMapper {
         //反序列化时，属性不存在的兼容处理
         this.getDeserializationConfig().withoutFeatures(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
+        //创建一个模块，用来配置时间格式
         SimpleModule simpleModule = new SimpleModule()
+                //注册时间格式的反序列化器
                 .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
                 .addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
                 .addDeserializer(LocalTime.class, new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)))
+                //注册时间格式的序列化器
                 .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT)))
                 .addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT)))
                 .addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT)));
 
-        //注册功能模块 例如，可以添加自定义序列化器和反序列化器
+        //注册功能模块，让 Jackson 生效 例如，可以添加自定义序列化器和反序列化器
+        //不注册，这些配置是不会生效的
         this.registerModule(simpleModule);
     }
 }

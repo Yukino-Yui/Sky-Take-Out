@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class OssConfiguration {
     /**
-     * //@Bean--作用：将方法返回的对象注册为 Bean，放入容器。
+     * //@Bean--作用：将方法返回的对象注册为 Bean，放入spring容器。
      * 关键点：方法参数 AliOssProperties aliOssProperties 会被 Spring 自动注入（容器中已有该 Bean）
      * @param aliOssProperties
      * @return

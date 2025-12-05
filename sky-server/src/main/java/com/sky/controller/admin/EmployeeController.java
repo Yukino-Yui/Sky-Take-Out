@@ -106,8 +106,7 @@ public class EmployeeController {
      */
     @GetMapping("/page")
     @ApiOperation("员工分页查询")
-    //数据格式不是json，不需要RequestBody注解
-    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){ //数据格式不是json，不需要RequestBody注解
         log.info("员工分页查询 {}", employeePageQueryDTO);
         PageResult pageresult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageresult);

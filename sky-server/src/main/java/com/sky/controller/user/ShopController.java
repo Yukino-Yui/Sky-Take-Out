@@ -21,6 +21,7 @@ public class ShopController {
 
     /**
      * 获取店铺的营业状态
+     * 用户端肯定不能设置营业状态
      * @return
      */
     @GetMapping("/status")

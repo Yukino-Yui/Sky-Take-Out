@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
         //设置状态 0：禁用 1：启用
         category.setStatus(StatusConstant.ENABLE);
 
-        categoryMapper.addCategory(category);
+        categoryMapper.insert(category);
     }
 
     /**
@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = new Category();
         BeanUtils.copyProperties(categoryDTO,category);
 
-        categoryMapper.updateCategory(category);
+        categoryMapper.update(category);
 
     }
 
@@ -62,13 +62,11 @@ public class CategoryServiceImpl implements CategoryService {
      * @return
      *///分页查询这里的代码理解的不太好，晚上回来好好看一下
     public PageResult pageQueryCategory(CategoryPageQueryDTO categoryPageQueryDTO){
-
-        //开启分页startPage 必须紧邻下一句的mapper查询，也就是说这个startpage会把参数页码和页数动态插入到sql语句
-        //例如参数是2，10(第二页，每页十条) select * from category limit 10,10(执行 SQL 之前，自动往 SQL 里加 LIMIT。)
+        //开启分页
         PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
 
-        //查询，返回值必须是 Page<T>，PageHelper在执行SQL时，会动态把 mapper 返回值改成 Page 类型
-        Page<Category> page = categoryMapper.pageQueryCategory(categoryPageQueryDTO);
+        //查询，返回值必须是 Page<T>，PageHelper在执行SQL时，会动态把mapper返回值改成Page类型
+        Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);
 
         //PageHelper把查询结果包装成一个Page对象，里面的方法，page.getTotal返回总条数
         //page.getResult返回当前页的数据列表，每一个记录都是Category类型
@@ -93,7 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
         //调用update，即降低了耦合，又能满足更新时间和updateUser，同时不用再写一遍update的sql语句
 
-        categoryMapper.updateCategory(category);
+        categoryMapper.update(category);
     }
 
     /**
@@ -116,7 +114,7 @@ public class CategoryServiceImpl implements CategoryService {
         }
 
         //删除分类数据
-        categoryMapper.deleteCategory(id);
+        categoryMapper.delete(id);
 
     }
 
@@ -127,7 +125,7 @@ public class CategoryServiceImpl implements CategoryService {
      */
     public List<Category> listCategory(Integer type){
 
-        return categoryMapper.listCategory(type);
+        return categoryMapper.list(type);
     }
 
 }

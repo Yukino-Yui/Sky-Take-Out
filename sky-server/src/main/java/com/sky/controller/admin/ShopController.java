@@ -22,6 +22,7 @@ public class ShopController {
 
     /**
      * 设置店铺的营业状态
+     * 使用redis缓存来存储shop营业状态
      * @param status
      * @return
      */
@@ -29,8 +30,7 @@ public class ShopController {
     @ApiOperation("设置店铺的营业状态")
     public Result setStatus(@PathVariable Integer status){
         log.info("设置店铺的营业状态为：{}",status == 1 ? "营业中" : "打烊中");
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(KEYS,status);
+        redisTemplate.opsForValue().set(KEYS,status);
         return Result.success();
     }
 

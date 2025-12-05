@@ -39,7 +39,7 @@ public class SetmealController {
 
         Setmeal setmeal = new Setmeal();
         setmeal.setCategoryId(categoryId);
-        setmeal.setStatus(StatusConstant.ENABLE);//查询起售中的套餐
+        setmeal.setStatus(StatusConstant.ENABLE);//查询起售中的套餐，停售的套餐不查询
 
         List<Setmeal>list = setmealService.list(setmeal);
         return Result.success(list);

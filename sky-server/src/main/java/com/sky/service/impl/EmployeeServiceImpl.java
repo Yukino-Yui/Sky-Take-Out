@@ -55,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // 密码比对
-        // 对前端传过来的明文密码进行md5加密处理
+        // 对前端传过来的明文密码进行md5加密处理，数据库中保存的是加密后的密码
         password = DigestUtils.md5DigestAsHex(password.getBytes());
         if (!password.equals(employee.getPassword())) {
             //密码错误
@@ -112,6 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
         long total = page.getTotal();
         List<Employee> records = page.getResult();
+        //最后封装为PageResult对象并返回给前端
         return new PageResult(total,records);
     }
 

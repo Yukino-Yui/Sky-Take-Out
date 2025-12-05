@@ -19,6 +19,7 @@ import java.util.Map;
 public class WebSocketServer {
 
     //存放会话对象
+    //如果 sessionMap 不是 static：不同实例之间无法共享 Session你也就无法实现：群发、点对点发送、管理在线用户
     private static Map<String, Session> sessionMap = new HashMap();
 
     /**

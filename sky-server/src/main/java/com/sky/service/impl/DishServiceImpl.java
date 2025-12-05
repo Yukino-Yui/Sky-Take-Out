@@ -89,7 +89,7 @@ public class DishServiceImpl implements DishService {
 
         //为什么要用DishVO，因为返回给前端的是Result.success(PageResult)，对象类型是PageResult
         //里面的records是一个列表，把列表里前端需要的每一项数据封装为一个DishVO对象，最后赋给List<DishVO>records
-        Page<DishVO> page = dishMapper.pageQueryDish(dishPageQueryDTO);//// 2. 执行 mapper 的 select
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);//// 2. 执行 mapper 的 select
 
         Long total = page.getTotal();
 
@@ -231,7 +231,7 @@ public class DishServiceImpl implements DishService {
                         .id(setmealId)
                         .status(StatusConstant.DISABLE)
                         .build();
-                setmealMapper.updateSetmeal(setmeal);
+                setmealMapper.update(setmeal);
                 }
             }
         }

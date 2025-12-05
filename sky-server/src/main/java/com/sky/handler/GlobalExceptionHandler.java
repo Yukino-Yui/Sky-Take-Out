@@ -11,6 +11,10 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
  * 全局异常处理器，处理项目中抛出的业务异常
+ * Controller 调用 Service → Service 抛异
+ * 不能让异常直接返回给前端
+ * 必须使用统一格式（Result）封装输出
+ * 用全局异常处理器最方便
  */
 @RestControllerAdvice
 @Slf4j
@@ -20,6 +24,10 @@ public class GlobalExceptionHandler {
      * 捕获业务异常
      * @param ex
      * @return
+     * Spring MVC 拦截所有抛到 Controller 层外的异常
+     * ➤ @RestControllerAdvice 注册了全局异常处理机制
+     * ➤ @ExceptionHandler 根据异常类型进行匹配
+     * ➤ 处理完后封装到Result对象中的error，在最后统一返回给前端
      */
     @ExceptionHandler
     public Result exceptionHandler(BaseException ex){

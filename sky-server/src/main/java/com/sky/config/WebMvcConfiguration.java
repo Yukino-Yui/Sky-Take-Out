@@ -23,6 +23,10 @@ import java.util.List;
 
 /**
  * 配置类，注册web层相关组件
+ * 也就是对 SpringMVC 框架的核心能力进行“整体扩展”：
+ * Swagger：负责生成接口文档（核心）。
+ * Knife4j：负责提供更强、更好看的 Swagger 界面（增强 UI）。
+ * 静态资源映射：让浏览器能访问 Knife4j/Swagger 的 HTML、JS 文件，否则文档打不开。
  */
 @Configuration
 @Slf4j
@@ -34,15 +38,14 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     private JwtTokenUserInterceptor jwtTokenUserInterceptor;
 
     /**
-     * 注册自定义拦截器
-     *
+     * 注册（配置）自定义拦截器
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
-                .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/employee/login");
+                .addPathPatterns("/admin/**") //对管理端所有请求检查 JWT
+                .excludePathPatterns("/admin/employee/login"); //登录接口需要放行
 
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
@@ -52,6 +55,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 通过knife4j生成管理端接口文档
+     * 创建 SWAGGER 文档的配置对象
      * @return
      */
     @Bean
@@ -96,16 +100,21 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 设置静态资源映射
+     * 让浏览器能访问swagger/knife4j生成的前端资源文件
      * @param registry
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始设置静态资源映射");
+
+        //Swagger 和 Knife4j 的 UI 都是一堆 html / css / js 文件，它们被打包在 jar 包的：classpath:/META-INF/resources/
+        //和classpath:/META-INF/resources/webjars/
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
     /**
      * 扩展Spring MVC框架的消息转换器
+     * 即配置 JSON 转换器
      * @param converters
      *
      */
@@ -114,7 +123,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("扩展消息转换器...");
         //创建一个消息转换器对象
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        //需要为消息转换器设置一个对象转换器，对象转换器可以将java对象序列化为json数据
+        //需要为消息转换器设置一个对象转换器，对象转换器可以提供序列化和反序列化
         converter.setObjectMapper(new JacksonObjectMapper());
         converters.add(0,converter);
     }

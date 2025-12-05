@@ -41,7 +41,7 @@ public interface EmployeeMapper {
      * 根据主键id动态修改员工状态or修改员工信息
      * @param employee
      */// 注意这里接收的类型是employee，所以在sql操作里面必须对employee里面有的属性进行操作
-       // 比如说传过来的如果是employeeDto，里面没有password，createTime等字段，如果在xml文件写这些就没法通过mybatis
+       // 比如说传过来的如果是employeeDTO，里面没有password，createTime等字段，如果在xml文件写这些就没法通过mybatis
         // 的getter方法查到，进一步没法执行sql语句
     @AutoFill(value = OperationType.UPDATE)
     void update(Employee employee);

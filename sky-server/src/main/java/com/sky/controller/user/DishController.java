@@ -8,6 +8,7 @@ import com.sky.vo.DishVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -36,23 +37,27 @@ public class DishController {
     @ApiOperation("根据分类id条件查询菜品及口味")
     public Result<List<DishVO>> list(Long categoryId) {
 
+        //1.查询redis有无缓存数据
+        //构造redis中的key，规则：dish_分类id
         String key = "dish_" + categoryId;
-
-        //查询redis中是否存在菜品数据
-        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key);
-        if(list != null && !list.isEmpty()) {
-            //如果存在,直接返回，无需查询数据库
+        List<DishVO> list = (List<DishVO>) redisTemplate.opsForValue().get(key); //获取缓存数据
+        if(list != null && !list.isEmpty()){
+            //有缓存数据就直接返回给用户，无需查询数据库
             return Result.success(list);
         }
-
+        //2.若无缓存数据，则查询数据库
         Dish dish = new Dish();
         dish.setCategoryId(categoryId);
-        dish.setStatus(StatusConstant.ENABLE);//查询起售中的菜品
+        dish.setStatus(StatusConstant.ENABLE);//查询起售中的菜品,停售的菜品不查询
 
-        //如果不存在，查询数据库，将查询到的数据放入redis缓存中
+
         list = dishService.listWithFlavor(dish);
+
+        //3.将查询到的数据放入redis缓存中
         redisTemplate.opsForValue().set(key, list);
 
+
+        //4.返回结果
         return Result.success(list);
     }
 

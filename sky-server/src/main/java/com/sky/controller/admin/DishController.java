@@ -67,7 +67,7 @@ public class DishController {
      * 菜品批量删除
      * @param ids
      * @return
-     * @RequestPara注解，由spring MVC 实现，实现前端传来的String类型数据的自动转换
+     * RequestPara注解，由springMVC 实现，实现前端传来的String类型数据的自动转换
      */
     @DeleteMapping
     @ApiOperation("菜品批量删除")
@@ -153,6 +153,7 @@ public class DishController {
     private void cleanCache(String pattern){
         //把符合(pattern)的keys都放在一个set<String>里面
         Set keys = redisTemplate.keys(pattern);
+        //删除这些key
         redisTemplate.delete(keys);
     }
 

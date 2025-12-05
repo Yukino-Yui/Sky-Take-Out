@@ -26,12 +26,12 @@ public class AutoFillAspect {
 
     /**
      * 切入点
+     * Pointcut统一拦截加入了AutoFill注解的方法
+     * Pointcut("表达式")只拦截 mapper包内的方法，并且这些方法上必须带 @AutoFill 注解
+     * 第一个*表示返回类型任意，(..)表示参数可以任意类型，任意数量。
+     * autoFillPointCut() 是一个“切点方法,唯一作用：给切点表达式起名字
      */
 
-    // Pointcut统一拦截加入了AutoFill注解的方法
-    // @Pointcut("表达式")只拦截 mapper包内的方法，并且这些方法上必须带 @AutoFill 注解
-    // 第一个*表示返回值任意，(..)表示参数可以任意类型，任意数量。
-    // autoFillPointCut() 是一个“切点方法,唯一作用：给切点表达式起名字
 
     @Pointcut("execution(* com.sky.mapper.*.*(..)) && @annotation(com.sky.annotation.AutoFill)")
     public void autoFillPointCut(){}
@@ -39,8 +39,8 @@ public class AutoFillAspect {
     /**
      * 前置通知，在通知中进行公共字段的赋值（实现逻辑），(通知加切入点构成切面)
      * Before表示切面逻辑在 目标方法执行之前 执行
-     * 这里是在执行符合 autoFillPointCut 这个切点规则的方法之前，先执行当前方法
-     * 它里面包含了方法名、方法参数、方法所属的类、方法上的注解、甚至目标对象的实例
+     * 这里是在执行符合 autoFillPointCut 这个切点表达式的方法之前，先执行当前方法
+     * JoinPoint它里面包含了方法名、方法参数、方法所属的类、方法上的注解、甚至目标对象的实例
      * 你可以把它想象成：当我拦截到某个方法时，JoinPoint 就是我手里拿到的这个方法全部信息的包装对象。
      */
 
@@ -77,14 +77,15 @@ public class AutoFillAspect {
                  * entity.getClass()通过实体类对象来获取字节码文件对象
                  * (AutoFillConstant.SET_CREATE_TIME，Long.class)表示方法名，和参数类型
                  */
-
+                //通过对象实例来获取Class对象
                 Class<?> clazz = entity.getClass();
+                //获取指定方法
                 Method setCreateTimes = clazz.getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
                 Method setCreateUser = clazz.getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
                 Method setUpdateTime = clazz.getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
                 Method setUpdateUser = clazz.getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
 
-                //运行set方法，来为对象属性赋值(获取的方法名.invoke()表示运行方法)
+                //调用指定方法，来为对象属性赋值(获取的方法名.invoke()表示运行方法)
                 setCreateTimes.invoke(entity,now); //指定对象是entity，值是已经获取的准备赋值的数据
                 setCreateUser.invoke(entity,currentId);
                 setUpdateTime.invoke(entity,now);

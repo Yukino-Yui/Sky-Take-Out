@@ -15,7 +15,7 @@
     </insert>
 
     <!--resultType返回类型，parameterType是参数类型--> <!--多表查询sql-->
-    <select id="pageQueryDish" resultType="com.sky.vo.DishVO">
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
         select d.*, c.name AS category_name from dish d left outer join category c on d.category_id = c.id
         <where>
             <if test="name != null and name != ''">
@@ -59,7 +59,7 @@
         where id = #{id}
     </update>
 
-    <!--可以通过分类id，菜品名字，菜品状态查询菜品-->
+    <!--可以通过分类id，菜品名字，菜品状态动态查询菜品-->
     <select id="list" resultType="Dish" parameterType="Dish">
         select * from dish
         <where>
@@ -74,6 +74,19 @@
             </if>
         </where>
         order by create_time desc
+    </select>
+
+    <!--根据条件统计菜品数量-->
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
     </select>
 
 </mapper>
